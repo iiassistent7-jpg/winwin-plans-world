@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Win-Win Plans</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#000)}
+.wrap{max-width:420px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.hero{background:linear-gradient(135deg,#185FA5 0%,#1D9E75 100%);border-radius:0 0 28px 28px;padding:28px 20px;text-align:center;margin-bottom:18px}
+.hero h1{font-size:22px;font-weight:500;color:#fff}
+.hero p{font-size:13px;color:rgba(255,255,255,0.8);margin-top:4px}
+.body{padding:0 14px 20px}
+.period-row{display:flex;gap:6px;margin-bottom:18px}
+.per-btn{flex:1;border:0.5px solid #ddd;background:#fff;padding:9px 4px;border-radius:12px;font-size:12px;font-weight:500;cursor:pointer;color:#888;transition:.15s;text-align:center;line-height:1.4}
+.per-btn.active{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.save-pill{display:inline-block;background:#0F6E56;color:#E1F5EE;font-size:9px;padding:1px 5px;border-radius:8px;margin-left:2px;vertical-align:middle}
+.start-card{background:#f8f8f8;border:0.5px solid #e5e5e5;border-radius:16px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.start-left .name{font-size:14px;font-weight:500;color:#111}
+.start-left .sub{font-size:12px;color:#888;margin-top:2px}
+.start-price{font-size:24px;font-weight:500;color:#111}
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border:0.5px solid #e5e5e5;border-radius:16px;padding:18px}
+.card.featured{border:2px solid #1D9E75}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.plan-name{font-size:15px;font-weight:500;color:#111}
+.plan-badge{display:inline-block;font-size:10px;font-weight:500;padding:3px 9px;border-radius:10px;margin-top:4px}
+.badge-std{background:#E1F5EE;color:#085041}
+.badge-pro{background:#FAEEDA;color:#633806}
+.price-right{text-align:right}
+.price-num{font-size:28px;font-weight:500;color:#111;line-height:1}
+.price-period{font-size:11px;color:#888;margin-top:3px}
+.divider{height:0.5px;background:#e5e5e5;margin:12px 0}
+.feats{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.feats li{font-size:13px;color:#555;display:flex;align-items:center;gap:8px}
+.dot{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dot-std{background:#E1F5EE}
+.dot-pro{background:#E6F1FB}
+.btn-row{display:flex;gap:8px}
+.pay-btn{flex:1;padding:11px 6px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid #ddd;background:#fff;color:#111;transition:.15s;text-align:center}
+.pay-btn.blue{background:#185FA5;border-color:#185FA5;color:#fff}
+.note{font-size:11px;color:#aaa;text-align:center;margin-top:16px;line-height:1.6;padding:0 8px}
+.note strong{color:#888}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Win-Win Plans</h1>
+    <p>Pick a plan and go!</p>
+  </div>
+
+  <div class="body">
+    <div class="period-row">
+      <button class="per-btn active" onclick="setPer(1)">1 mo</button>
+      <button class="per-btn" onclick="setPer(6)">6 mo<br><span class="save-pill" id="s6"></span></button>
+      <button class="per-btn" onclick="setPer(12)">12 mo<br><span class="save-pill" id="s12"></span></button>
+    </div>
+
+    <div class="start-card">
+      <div class="start-left">
+        <div class="name">START</div>
+        <div class="sub" id="start-sub">first 10 deals free</div>
+      </div>
+      <div class="start-price">0</div>
+    </div>
+
+    <div class="cards">
+      <div class="card featured">
+        <div class="card-top">
+          <div>
+            <div class="plan-name">STANDARD</div>
+            <span class="plan-badge badge-std" id="std-badge">Popular choice</span>
+          </div>
+          <div class="price-right">
+            <div class="price-num" id="std-p"></div>
+            <div class="price-period" id="std-sub"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <ul class="feats" id="std-feats"></ul>
+        <div class="btn-row" id="std-btns"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <div class="plan-name">PRO</div>
+            <span class="plan-badge badge-pro" id="pro-badge">VIP priority</span>
+          </div>
+          <div class="price-right">
+            <div class="price-num" id="pro-p"></div>
+            <div class="price-period" id="pro-sub"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <ul class="feats" id="pro-feats"></ul>
+        <div class="btn-row" id="pro-btns"></div>
+      </div>
+    </div>
+
+    <div class="note" id="pay-note"></div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) tg.ready();
+
+// Цены USD: 1мес / 6мес / 12мес
+const P = {
+  1:  {s: 29,  p: 49},
+  6:  {s: 139, p: 249},
+  12: {s: 239, p: 449}
+};
+// Экономия в числах
+const SAVE_S = {6: 35,  12: 109};
+const SAVE_P = {6: 45,  12: 139};
+
+let per = 1;
+
+const PP_URL = 'https://paypal.me/istudio3377';
+
+let userLang = 'en';
+if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+  userLang = tg.initDataUnsafe.user.language_code || 'en';
+  if (userLang === 'he') userLang = 'en'; // на всякий случай
+}
+
+const L = {
+  title:   {ru:'Тарифы Win-Win', en:'Win-Win Plans', ar:'خطط Win-Win'},
+  sub:     {ru:'Выбери план — и вперёд!', en:'Pick a plan and go!', ar:'اختر خطة وانطلق!'},
+  perMon:  {ru:'в месяц', en:'per month', ar:'شهريا'},
+  per6:    {ru:'итого за 6 мес', en:'total for 6 mo', ar:'المجموع لـ 6 أشهر'},
+  per12:   {ru:'итого за год', en:'total for year', ar:'المجموع للسنة'},
+  stdBadge:{ru:'Популярный выбор', en:'Popular choice', ar:'الخيار الشائع'},
+  proBadge:{ru:'VIP приоритет', en:'VIP priority', ar:'أولوية VIP'},
+  startSub:{ru:'первые 10 сделок бесплатно', en:'first 10 deals free', ar:'أول 10 صفقات مجانا'},
+  ppBtn:   {ru:'Оплатить через PayPal', en:'Pay via PayPal', ar:'الدفع عبر PayPal'},
+  note:    {ru:'PayPal paypal.me/istudio3377<br>После оплаты подписка активируется в течение часа',
+            en:'PayPal paypal.me/istudio3377<br>Subscription activates within 1 hour after payment',
+            ar:'PayPal paypal.me/istudio3377<br>يتم تفعيل الاشتراك خلال ساعة بعد الدفع'},
+  f: {
+    1: {ru:'Безлимитные лиды', en:'Unlimited leads', ar:'عملاء غير محدودين'},
+    2: {ru:'Персональные QR-коды', en:'Personal QR codes', ar:'رموز QR شخصية'},
+    3: {ru:'Долговая книга агентов', en:'Agent debt book', ar:'دفتر ديون الوكلاء'},
+    4: {ru:'Экспорт сделок в CSV', en:'Export deals to CSV', ar:'تصدير الصفقات CSV'},
+    5: {ru:'Поддержка Винса 24/7', en:'Vince support 24/7', ar:'دعم فينس 24/7'},
+  },
+  fp: {
+    1: {ru:'Всё из STANDARD', en:'All from STANDARD', ar:'كل شيء من STANDARD'},
+    2: {ru:'Топ позиции в каталоге', en:'Top catalog positions', ar:'مواقع متصدرة'},
+    3: {ru:'Значок верификации ✅', en:'Verification badge ✅', ar:'شارة التحقق ✅'},
+    4: {ru:'Приоритетная поддержка Винса', en:'Priority Vince support', ar:'دعم فينس ذو أولوية'},
+  },
+};
+
+function t(key) { return L[key][userLang] || L[key]['en'] || ''; }
+function tf(key, n) { return L[key][n][userLang] || L[key][n]['en'] || ''; }
+
+function dot(color) {
+  const c = color === 'std' ? '#0F6E56' : '#185FA5';
+  const bg = color === 'std' ? 'dot-std' : 'dot-pro';
+  return `<span class="dot ${bg}"><svg width="8" height="8" viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" stroke="${c}" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></span>`;
+}
+
+function renderFeats() {
+  const sf = document.getElementById('std-feats');
+  sf.innerHTML = [1,2,3,4,5].map(n => `<li>${dot('std')}${tf('f', n)}</li>`).join('');
+  const pf = document.getElementById('pro-feats');
+  pf.innerHTML = [1,2,3,4].map(n => `<li>${dot('pro')}${tf('fp', n)}</li>`).join('');
+}
+
+function renderBtns(id, plan) {
+  const el    = document.getElementById(id);
+  const price = plan === 'STANDARD' ? P[per].s : P[per].p;
+  const label = per === 1 ? '1 mo' : per === 6 ? '6 mo' : '12 mo';
+  const ppUrl = `${PP_URL}/${price}USD`;
+  el.innerHTML = `
+    <a href="${ppUrl}" target="_blank" style="flex:1;text-decoration:none" onclick="notifyBot('${plan}','${label}','$${price}','PayPal')">
+      <button class="pay-btn blue" style="width:100%">${t('ppBtn')}</button>
+    </a>`;
+}
+
+function render() {
+  document.querySelector('.hero h1').textContent  = t('title');
+  document.querySelector('.hero p').textContent   = t('sub');
+  document.getElementById('start-sub').textContent = t('startSub');
+  document.getElementById('std-badge').textContent = t('stdBadge');
+  document.getElementById('pro-badge').textContent = t('proBadge');
+
+  const v = P[per];
+  document.getElementById('std-p').textContent   = '$' + v.s;
+  document.getElementById('std-sub').textContent = per === 1 ? t('perMon') : per === 6 ? t('per6') : t('per12');
+  document.getElementById('pro-p').textContent   = '$' + v.p;
+  document.getElementById('pro-sub').textContent = per === 1 ? t('perMon') : per === 6 ? t('per6') : t('per12');
+
+  document.getElementById('s6').textContent  = '-$' + SAVE_S[6];
+  document.getElementById('s12').textContent = '-$' + SAVE_S[12];
+
+  renderFeats();
+  renderBtns('std-btns', 'STANDARD');
+  renderBtns('pro-btns', 'PRO');
+  document.getElementById('pay-note').innerHTML = '<strong>' + t('note') + '</strong>';
+}
+
+function setPer(p) {
+  per = p;
+  document.querySelectorAll('.per-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === {1:0,6:1,12:2}[p]);
+  });
+  render();
+}
+
+function notifyBot(plan, period, price, method) {
+  if (tg) tg.sendData(JSON.stringify({action:'pay_intent', plan, period, price, method}));
+}
+
+render();
+</script>
+</body>
+</html>
